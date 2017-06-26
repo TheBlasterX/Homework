@@ -1,0 +1,61 @@
+//Jipa Alexandru-Stefan 321CB
+//Problema1 ----------------Points
+	Salvez cele n puncte intr-un vector de tip unsigned int, iar intervalele
+intr-o structura cu 2 campuri, start si end, reprezentand capetele intervalelor
+care sunt tot de tip unsigned int. Structura contine si suprascrierea
+operatorului <, folosita la sortare.
+    Folosesc metoda greedy, sortez ca prim criteriu dupa capatul din stanga
+(crescator) si, in caz de egalitate dupa lungimea intervalului(descrescator).
+	In functia result parcurg toate intervalele si verifica daca intervalul
+curent este inclus in altul deja ales. Apoi verific daca in acel interval se
+gasesc puncte de interes. Parcurg cu un for de la punctul curent pana unde
+incap puncte in intervalul curent. Apoi pt urmatorul interval daca nu este
+inclus in altul continui cu punctele de unde am ramas la pasul precedent.
+	Nu parcurg de mai multe ori nr de puncte, altfel ar fi iesit complexitate
+foarte mare.
+	Ca si complexitate aceasta solutie ruleaza in (pt worst case) O(n * |n|),
+unde n este nr de intervale, iar |n| este lungimea intervalului.
+	In parcurgerea de intervale nu acopar si cazul in care un interval se poate
+regasi la final in reuniunea altor interale, alese corect pe parcurs. Asa, ca
+fac o repetitiva in care elimin intervalele care sunt in plus, folosind si o
+functie auxiliara, repeated, care verficica daca un interval este in plus sau
+nu. Am folosit-o pt a mai aerisi codul.
+
+//Problema3 ----------------Stropitori
+	Am folosit vectori si contori de tip double peste tot, deoarece am obervat
+ca am nevoie sa calculez cu nr mari, si am lasat asa peste tot pt a nu mai face
+cast-uri. Salvez cele n coordonate si puteri in 2 vectori, fiecare putere fiind
+asociata coordonatei curente.
+    Folosesc functia max_stropitori pt a intoarce nr maxim de stropitori care
+pot uda gazonul. Folosesc un vector auxiliar in care salvez starea fiecarei
+stropitori (-1 pt stanga, 0 pt blocat si 1 pt dreapta).
+	Folosesc metoda greedy (coordonatele sunt date deja sortate crescator).
+Parcurg coordonatele de la stanga la dreapta. Verific intai daca pot uda la
+stanga, apoi la dreapta, ultimul caz reprezentand stropitoarea blocata.
+	Tratez separat cazurile extreme(prima si ultima stropitoare), fiindca
+ele depind si de marginile stadionului si nu am vrut sa mai pun cate un if
+separat in for pt fiecare caz.
+	Solutia acestei probleme are complexitate O(n). Parcurg o singura data
+fiecare stropitoare.
+
+//Problema4 ----------------Warriors
+	Citesc cele 2 nr din fisier, level_range fiind nivelul maxim (N),iar lifes
+este nr de vieti. Apelez functia min_games si ii afisez rezultatul, aceal fiind
+nr minim de meciuri de jucat pt a-ti afla nivelul. Functia min_games are rolul
+de a face cautarea mai rapida (asemanatoare cu cautarea binara).Imparte
+intervalul de nivele la 2 pana cand marginea inf + 1 < marginea sup.
+De aici este apelata functia search si in functie de rezultatul intors
+marginea inferioara = mjiloc sau marginea superioara = mijloc.
+    Functia search calculeaza suma combinarilor de medium luate cate k, fiind
+de la 0 la nr de vieti - 1. Pt combinari de n luate cate k ma duc direct pe
+linia n din triunghiul lui Pascal si incep sa calculez combinarile in functie
+de cea precedenta. Iar daca suma lor depaseste nr de nivele atunci intorc suma
+obtinuta. A trebuit sa mai pun si conditia combinarea curenta sa nu fie 0 pt ca
+se poate depasi reprezentarea lui unsgined long.
+    Am ales sa declar variabilele de tip double pt ca am nevoie de nr foarte
+mari in functia search si am lasat peste tot double pt a nu mai face multe
+cast-uri. comb l-am ales de tip unsigned long long pt a salva un nr foarte mare
+dar de tip intreg pt a avea range < double si ajunge sa faca overflow, astfel
+oprindu-mi cautarea mai devreme.
+	Solutia prezenta are complexitate O(k * log(n)), unde k este nr de vieti si
+n este nr de nivele (de la 1 la n) sau nivelul maxim.  

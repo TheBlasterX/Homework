@@ -1,0 +1,28 @@
+// Jipa Alexandru-Stefan 321CB
+
+/----------------------------------Problema 1---------------------------------/
+	In rezolvarea problemei 1 am ales ca metoda de rezolvare algoritmul lui
+Khan deoarece are complexitatea O(|V| + |E|) (in functia sortare).
+	In functia permutari imi construiesc graful(sub forma de liste de
+adiacenta) astfel: pt a fii mai usor lucrez cu int-uri cu valori de la 0 la 25
+(pt literele alfabetului englez). Compar cuvintele 2 cate 2 si cand gasesc o
+diferenta, o consider o muchie de insterat in graf, valoarea nodului fiind
+valoarea ascii a literei - 97. Tot in aceasta functie tratez cazul in care
+daca al 2-lea cuvant este mai scurt decat primul si daca primul cuvant contine
+de la inceput exact al 2-lea cuvant atunci scriu in fisier "Imposibil".
+Constructia grafului are complexitate O(n * m), unde n este nr de cuvinte si
+m nr de comparatii care se fac pt fiecare cuvant(litera cu litera).
+	Functia addMuchie adauga muchie in graf.
+	Functia sortare realizeaza sortarea topologica a grafului creat, scrie in
+fisiser "Imposibil", daca se detecteaza ciclu in graf. Altfel scrie noul
+alfabet. Literele care nu sunt folosite sunt puse in ordinea in care sunt ele
+in alfabetul englez standard. Folosesc un vector in care imi pun nr de muchii
+pt fiecare nod. Folosesc o coada in care pun la inceput toate valorile
+nodurilor din graf. Apoi cat timp mai am elemente in coada, pt fiecare element
+din coada il pun in alfabetul final il scot din coada si trec prin toti vecinii
+nodului ales, micsorand cu 1 nr muchiilor pt toti vecinii nodului ales. Daca nr
+de muchii ajunge la 0 pt un nod il pun iar in coada. Dupa acest while daca
+nr nodurilor parcurse nu este egal cu nr total de noduri atunci inseamna ca am
+ciclu in graf. Daca am ciclu scriu "Imposibil", altfel scriu alfabetul. Pt
+fiecare valoare a nodului adun 97 pt a o aduce la val ascii pt litere mici si
+apoi convertesc la char.
