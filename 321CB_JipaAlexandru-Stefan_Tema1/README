@@ -1,0 +1,28 @@
+// Jipa Alexandru-Stefan 321CB
+
+Scopul acestei teme este implementarea unui interpretor pentru limbajul IMP++in Java.
+Pt realizarea acestei teme am folosit 4 clase:
+	- Main:
+		Citesc din fisier si scriu in fisier.
+		Imi inlocuiesc tab-urile cu spatii si spatiile repetate doar cu 1 spatiu.
+		Folosesc metoda ErrorCheck pt a verifica daca programul primit nu are erori.
+		Am considerat Check Failed > Missing return > Assert failed
+		Folosesc metoda GetResult care intoarce rezultatul programului, asta in caz ca
+nu se detecteaza nicio eroare in ErrorCheck. Acesta apeleaza metoda EvalProg care
+evalueaza recursiv tot programul, folosind si metoda EvalOp care evalueaza o operatie.
+		Metoda Listsplitting imparte string-ul intr-un vector de string-uri, fiecare
+fiind un program.
+		Metoa isAlpha verifica daca am un nume de variabila.
+	- Database:
+		Contine un Hashmap in care adaug chei de forma <nume_var> <valoare> si din
+care pot extrage valoarea unei variabile.
+	- ScopeErr:
+		Doar extinde Exception.
+		In main o folosesc pt a trata cazul variabilelor not in scope.
+	- Node:
+		Aceasta clasa contine constructia recursiva a arborelui.
+		Un nod poate avea maxim 4 fii, for-ul avand nevoie de 4.
+		Arborele este construit impartind fiecare program in sub programe, in functie
+de tipul acestuia.
+Ca si checker l-am folosit pe cel de tip greedy: tests greedy public si tests greedy
+assert.

@@ -1,0 +1,18 @@
+//321CB Jipa Alexandru-Stefan
+
+	In aceasta tema am facut doar partea de evaluare, care primeste ca input
+un program sub forma unui ADT.
+	Functia evalAdt apeleaza functia evaluate care prin pattern matching intoarce
+rezultatul conform cerintei.
+	evaluate apeleaza functia evalPR care face evaluarea intregului program in
+mod recursiv prin pattern matching.
+	evalPR are pattern matching pt fiecare tip de Prog (din data Prog)
+	Pt For am folosit 2 functii, prima in care asignez contorul, iar cea
+de-a 2-a executa corpul for-ului cat timp conditia e adevarata si incrementeaza
+contorul.
+	Funtia EvalOP evalueaza prin pattern matching orice tip de expresie (din
+data Expr).
+	Mi-am construit o baza de date in care tin variabilele si valorile lor
+intr-o lista de pairs de tip String Int. Am facut si functii pt obtine element
+din baza de date si pt a adauga element in baza de date (getvalue si putvalue).
+	Folosesc si functia getINT pt a obtine un Int dintr-un Either String Int.

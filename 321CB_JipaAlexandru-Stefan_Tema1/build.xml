@@ -1,0 +1,19 @@
+<project>
+    <target name="clean">
+        <delete dir="build"/>
+        <delete file="tema.jar"/>
+    </target>
+    <target name="compile">
+        <mkdir dir="build/tema1"/>
+        <javac srcdir="tema1" destdir="build/tema1"/>
+    </target>
+
+    <target name="jar" depends="compile">
+        <jar destfile="tema.jar" basedir="./build/tema1">
+            <manifest>
+                <attribute name="Main-Class" value="Main"/>
+            </manifest>
+        </jar>
+
+    </target>
+</project>
