@@ -1,0 +1,184 @@
+//Jipa Alexandru-Stefan 321CB
+
+Pt aceasta tema folosesc 2 fisiere sursa .c, si anume: client.c si server.c
+
+In client.c:
+	Folosesc o functie create_file care intoarce numele fisierului de creat.
+	Folosesc o functie error (care afiseaza mesajele de eroare).
+	In main imi declar toate variabilele necesare, creez fisierul cu numele
+dat de functia create_file.
+	Declar variabilele si structurile necesare pt socket-ii udp si tcp.
+	Deschid socketii, ii pun in multimea de socketiii si fac conexiunea cu
+serverul.
+	fdmax = maximul dintre socket-ii UDP si TCP.
+	Folosesc functia select pt a putea face multiplexare.
+
+	In repetitiva verific intai daca sunt pe socket-ul 0 (citire de la
+tastatura) si tastez comanda:
+		Comenzile listsold, getmoney, putmoney, logout nu se transmit
+la server daca in acea sesiune nu este logat niciun user si se afiseaza codul
+de eroare -1.
+		Daca este un user logat in sesiunea curenta si se da comanda
+login, aceasta nu se transmite la server si se afiseaza codul de eroare -2.
+		La fiecare tastare comenzii login (corecta) actualizez ultimul
+card tastat.
+		Daca primesc comanda unlock , concatenez la unlock ultimul card
+pe care s-a dat login si il trimit server-ului prin UDP.
+		Tot in acest if in restul situatiilor trimit comanda prin TCP
+la server.
+		DACA SE DA O COMANDA GRESITA DE LA TASTATURA SE SCRIE IN FISIER
+DAR NU SE TRIMITE LA SERVER, SI CLIENTUL DOAR ASTEAPTA O ALTA COMANDA.
+
+	Verific daca primesc mesaj pe socket-ul UDP:
+		Afisez in consola mesajul si il scriu si in fisier.
+		In, plus daca primesc mesajul trimite parola secreta prin UDP
+citesc de la tastatura parola. La sirul care contine ultimul card folosit se
+concateneaza parola si o trimit la server prin UDP.
+
+	Apoi verific daca primesc mesaj pe socket-ul TCP:
+		Daca este comanda quit eliberez tot ce am alocat dinamic,
+inchid fisierul in care scriu, socket-ii UDP si TCP, scot stdin din lista de
+socketi si inchid clientul.
+		Daca primesc comanda login si nu sunt logat in sesiunea curenta
+atunci primesc de la server unul dintre codurile de eroare -3, -4 sau -5, sau
+serverul ma autentifica. Scriu in fisier ce contine buffer-ul si il afisez si
+in terminal. Daca intoarce -2, inseamna ca sunt logat in alt terminal
+		Daca primesc comanda logout si sunt logat in sesiunea curenta
+atunci ma deloghez(setez flagg-ul logged pe 0) si afisez mesajul primit de la
+server si il scriu si in fisier.
+		Pt comenzile listsold, getmoney, putmoney afisez buffer-ul
+primit de la server. (inseamna ca sunt logat in sesiunea curenta)
+	
+	Scriu in fisierele log tot ce sriu la tastatura din client, inclusiv
+comanda QUIT. De asemenea afisez in terminal si scriu in fisier tot ce
+primesc ca raspuns de la server, mai putin comanda QUIT, fiinda este tastata in
+server, nu client.
+
+In server.c:
+	Am o structura client in care am toate campurile pe care le citesc din
+fisier.
+	Folosesc o functie error (care afiseaza mesajele de eroare).
+	Folosesc o functie logout care ma delogheaza.
+	Folosesc o functie check_card care verifica daca exista card-ul dat in
+baza de date, si daca exista inoarce pozitia acestuia(pt a putea acesa direct
+alte campuri asociate acestui card). (-1 in caz negasire)
+	Folosesc o functie check_pin care verifica daca pin-ul corespunde
+cardului dat si intorc pozitia din baza de date. (-1 in caz negasire).
+	Folosesc o functie remove_client care elimina client-ul din vectorul
+de clienti.(cand un terminal da quit)
+	Folosesc o functie database in care memorez baza de date luate din
+fisier-ul primit ca argument de server.
+	Folosesc o functie send_tcp care transmite mesajul prin TCP.
+	In main imi declar toate variabilele necesare.
+	Declar variabilele si structurile necesare pt socket-ii udp si tcp.
+	Deschid socketii, ii pun in multimea de socketiii si fac conexiunea cu
+serverul. Imediat dupa ce deschid fiecare socket TCP/UDP folosesc functia
+setsockopt pt a putea reutiliza socket-ii.(pt a nu avea portul blocat)
+	fdmax = maximul dintre socket-ii UDP si TCP.
+	Folosesc functia select pt a putea face multiplexare.
+
+	In repetitiva verific intai daca sunt pe socket-ul 0 (citire de la
+tastatura) si tastez comanda:
+		quit : anunta toti clinetii ca trebuie sa se inchida.
+Inainte de a se inchide serveru se inchid toti socket-ii folositi si
+eliberez tot ceea ce am alocat dinamic.
+		DACA SE DA ALTA COMANDA DIN SERVER NU SE AFISEAZA NIMIC SI
+SERVERUL RAMANE ACTIV IN CONTINUARE.
+
+	Daca sunt pe socket-ul de tip UDP:
+		Primesc mesaj prin UDP de la client si verific intai ce tip de
+mesaj am primit (unlock nr_card sau nr_card parola _secreta).
+		Daca primesc unlock nr_card:
+			Pun in buffer: "UNLOCK> -4 : Numar card inexistent\n", in cazul unui card inexistent
+				       "UNLOCK> -6 : Operatie esuata\n", in cazul in care card-ul nu este blocat
+				       "UNLOCK> Trimite parola secreta\n", in cazul in care card-ul este blocat.
+			Apoi trimit prin UDP buffer-ul la server.
+		Daca primesc nr_card parola _secreta:
+			Pun in buffer: "UNLOCK> -7 : Deblocare esuata\n", pt parola gresita
+				       "UNLOCK>  Client deblocat\n", pt parola corecta.
+
+	Daca sunt pe socket-ul TCP:
+		Fac accept si adaug noul socket intors de accept() la multimea
+descriptorilor de citire.
+
+	ALTFEL:
+		Am apelul functiei recv (primesc mesaj prin TCP):
+		Daca primesc login nr_card pin:
+			Pun in buffer: "ATM> -2 : Sesiune deja deschisa\n", daca am un alt client logat pe cardul curent.
+				       "ATM> -3 : Pin gresit\n", daca pin-ul este gresit.
+				       "ATM> -4 : Numar card inexistent\n", daca nr_cardului este inexistent.
+				       "ATM> -5 : Card blocat\n", daca id-ul cardului este blocat
+				       "ATM> Welcome " + NUME + PRENUME + "\n", daca datele introduse sunt corecte.
+			La login daca pun acelasi card cu pin gresit de 3 ori la rand il blochez.
+			Am facut cum a fost pus pe forum si anume: daca am dat
+de 2 ori la rand acelasi card cu pin gresit si apoi oricare alt card, atunci se
+reseteaza nr de incercari pt cardul pe care am gresit 2 pin-uri. Adica, 2 dupa
+greseli la rand pot da un card inexistent, blocat, pin gresit sau logat cu
+succes. Toate aceste cazuri reseteaza nr de incercari ale acelui card pe care
+s-au gresit 2 pinuri consecutive.
+			DACA DAU LOGIN CU UN CARD DE 2 ORI LA RAND GRESIT APOI
+DAU QUIT SI PORNESC IAR CLIENTUL INAPOI SI GRESESC INCA O DATA, ATUNCI CARDUL
+ESTE BLOCAT(parola fiind 2222):
+	stefan@stefan-VirtualBox:~/Protocoale/Tema2$ ./client "127.0.0.1" 2209
+	login 222222 1234
+	ATM> -3 : Pin gresit
+	login 222222 2345
+	ATM> -3 : Pin gresit
+	quit
+	stefan@stefan-VirtualBox:~/Protocoale/Tema2$ ./client "127.0.0.1" 2209
+	login 222222 2343
+	ATM> -5 : Card blocat
+
+			Nu ajung in server sa dau comanda login intr-un client
+in care sunt deja logat.
+
+		Daca primesc listsold:
+
+			Pun in buffer sold-ul pe care il are user-ul respectiv.
+			Il pun in buffer cu sprintf, scriind un double cu 2
+zecimale. Fac concatenare "ATM> " + SOLD + "\n".
+			Nu ajung in server sa dau comanda listsold intr-un
+client in care sunt deja logat.
+
+		Daca primesc logout:
+			Apelez functia logout care face delogarea.
+			Scriu in buffer: "ATM> Deconectare de la bancomat\n".
+			Nu ajung in server sa dau comanda logout intr-un
+client in care sunt deja logat.
+
+		Daca primesc putmoney suma:
+			Adaug suma la sold-ul user-ului.
+			Conversia de la double la char* o fac cu atof().
+			Scriu in buffer: "ATM> Suma depusa cu succses\n".
+			Nu ajung in server sa dau comanda putmoney intr-un
+client in care sunt deja logat.
+
+		Daca primesc getmoney suma:
+			Scad din sold-ul user-ului suma data.
+			Pun in buffer: "ATM> -9 Suma nu este multiplu de 10\n", daca suma nu este multiplu de 10
+				       "ATM> -8 Fonduri insuficiente\n", daca suma > sold-ul user-ului
+				       "ATM> Suma " + suma + " retrasa cu succses\n", daca suma <= sold-ul userului.
+
+			Nu ajung in server sa dau comanda getmoney intr-un
+client in care sunt deja logat.
+
+		Pt toate dintre aceste comenzi exista un singur send care
+transmite prin TCP mesajul la client.
+
+		Daca primesc comanda quit:
+			Rup legatura intre clientul curent si server.
+Inainte de a rupe legatura verifica daca este un user logat in acel client.
+Daca exista il deloghez si abia apoi trimit la client mesajul "quit\n",iar el
+stie ca trebuie sa se deconecteze.
+			Din if-ul pt quit dau send_tcp separat pt ca apoi
+trebuie sa inchid soket-ul curent si sa il scot din lista de soket-i si apoi
+dau continue pt a sari peste sent_tcp care este in afara if-urilor comenzilor
+care are rolul de a trimite raspunusul uneia dintre comenzile de dinainte de
+quit.
+	Codul a fost rulat asa
+run_server:
+	./$(SEL_SRV) ${PORT} ${FILE}
+
+run_client:
+	./$(CLT) ${IP_SERVER} ${PORT}
+

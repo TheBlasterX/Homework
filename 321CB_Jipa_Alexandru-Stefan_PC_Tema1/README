@@ -1,0 +1,47 @@
+//Jipa Alexandru-Stefan 321CB
+
+Pentru realizarea acestei teme am folosit 2 fisiere surse si 1 header. Scriptul pe care am rulat tema are parametrii nemodificati si am pus mai multe fisiere de dimensiuni diferite pt a testa tema.
+Makefile-ul este cel din schelet, nemodificat. In link emulator nu am scris cod.
+
+Header-ul lib.h contine structura data msg.
+Am mai adaugat 2 structuri:
+
+typedef struct {
+	unsigned char SOH;
+	unsigned char LEN;
+	unsigned char SEQ;
+	unsigned char TYPE;
+	char DATA[250];
+	unsigned short CHECK;
+	unsigned char MARK;
+}MINI_KERMIT;
+
+typedef struct {
+	unsigned char MAXL;
+	unsigned char TIME;
+	unsigned char NPAD;
+	unsigned char PADC;
+	unsigned char EOL;
+	unsigned char QCTL;
+	unsigned char QBIN;
+	unsigned char CHKT;
+	unsigned char REPT;
+	unsigned char CAPA;
+	unsigned char R;
+}S;	//PACHET DE TIP S (SEND-INIT)
+
+Chiar daca am facut campul DATA static, cand pun DATA in payload pt a-l transmite am grija sa incarc in payload atat cat are nevoie DATA de spatiu, in functie de tipul pachetului trimis.
+Header-ul mai contine si un define ce tine loc de while(1).
+
+Cele 2 fisiere sursa sunt cele din shelet, ksender.c si kreceiver.c .
+ksender.c:
+	Trimit pachetele in ordinea stabilita in enuntul temei. (S F D Z B), cu mentiunea ca F, D si Z se trimit pentru fiecare fisier.
+	Incrementez secventa pt transmisiile reusite si folosesc Numar de secventa, modulo 64 (secv de la 0 la 63).
+	Daca un pachet este corupt il trimit pana este bun.(check-ul se pastreaza)
+	In cazul pachetelor pierdute, le transmit de 3 ori, iar daca pierderile continua opresc transmisia.
+	Am un timp de asteptare de 5 secunde in cazul pachetelor pierdute.
+	Citeste date din fisisere.
+
+kreceiver.c:
+	Primesc pachetele in ordinea in care imi sunt transmise din sender, trimit ack/ nak sender-ului in caz de primire data corecta/ data corupta.
+	Scire date in fisiere.
