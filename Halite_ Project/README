@@ -1,0 +1,65 @@
+//Proiect S.A.M.
+Bulachi Marin			321CB
+Jipa Alexandru-Stefan	321CB
+Galbenus Andrei-Emanuel 322CB
+
+Am ales sa facem acest proiect in C++ deoarece suntem obisnuiti cu el si credem ca ar fi mai rapid pentru acest program.
+
+Regula de compilare:
+g++ -Wall -std=c++11 MyBot.cpp -o MyBot.o
+
+Proiectul contine 3 fisiere : MyBot.cpp, hlt.hpp, networking.hpp.
+Am ales sa folosim starter package-ul pt C++ de pe site, descarcat de la adresa https://halite.io/downloads.php.
+hlt.hpp si networking.hpp sunt nemodificate (fac parte din arhiva de pe net).
+
+Deci tot codul efectiv este scris in MyBot.cpp, nefiind nicio clasa folosita in acest fisier.
+
+/*----------------------------------------Etapa--2----------------------------------------*/
+	Am folosit bot-ul de la etapa trecuta, doar ca, acum am mai adaugat si functia overkill.
+(in fisierul MyBot.cpp) Aceasta functie verifica daca unul, sau mai multe patratele(care
+sunt vecine cu patratelul botului nostru) sunt ale unui bot inamic. Pt fiecare vecin inamic
+se verifica si toti vecinii lui, astfel dand-une cea mai buna zona de a exploata overkill-ul
+pe inamic. Functia intoarce directia in care sa ataci(daca e ceva de atacat), altfel
+intoarce 0.
+	In main a fost adaugat un if in care se verifica daca overkill-ul a intors o directie
+diferita de 0.(imediat dupa conditia ca patratelul sa fie al botului nostru).
+	Tot in main mai jos int-un if am ales sa lasam strength-ul mai mare pt ca la aceasta
+etapa nu ne intereseaza chiar asa de mult sa cucerim mapa intr-un nr minim de frameuri, ci
+sa atacam bot-ul inamic. (Strength-ul a fost marit pe acel if de la 75 la 135).
+	Toti am cautat cele mai bune solutii pt a ne si dezvolta bine in timp ce avem si un
+inamic pe harta de invins.
+/*----------------------------------------Etapa--2----------------------------------------*/
+
+/*----------------------------------------Etapa--3----------------------------------------*/
+	Am folosit acelasi de la etapa trecuta(etapa 2). In main am creat o matrice pt mapa, in
+care salvam toate atributele, inclusiv directia pe care o are setata un patratel. Tot in
+main se mai face o verificare pt ca patratelele noastre sa nu se manance intre ele.
+	Am modificat functia overkill(verifica daca exista un element neutru cu strength > 40
+intre mine si adversar nu mai atac). Am adaugat si functia get_next_loc(este comentata in
+cod).
+	In arhiva am pus Mybot.cpp, headerele hlt.hpp, networking.hpp, Makefile cu regului build,
+run si clean, README. Nu am incarcat executabilul halite si botii de la echipa de PA fiindca
+am considerat ca nu este necesar.
+/*----------------------------------------Etapa--3----------------------------------------*/
+
+In partea de algoritmica:
+	Ne-am gandit sa ne expandam foarte repede la inceput, avand in vedere mai multe criterii:
+	distanta minima pana la un punct ce nu ne apartine noua;
+	daca avem strenght-ul necesar pentru a-l putea manca;
+	am incercat pe cat posibil sa ocolim toate zonele cu productie 0, dar in unele situatii este nefavorabil deoarece dureaza sa mult sa ocoleasca zona si avand puncte cu strength foarte mare tot castigam timp;
+	punctul de atacat il alegem in functie de formule, de ex: cea mai buna productie apropiata si daca strength-ul este suficient pt a-l putea cuceri;
+	Am avut in vedere sa nu pierdem punctele mari in perioada de expansiune, facand-ule sa se ocoleasca;
+	Am verificat daca de pe o pozitie oarecare putem aduna suficient strength pe linie/coloana pt a putea ataca o celula, daca nu asteptam sa mai creasca strength-ul.
+
+Complexitate:
+	Pentru aflarea unei directii(catre cel mai apropiat punct favorabil) worst case este O(width * height), atunci cand se apeleaza functia the_closest_point_on_map, care parcurge toata harta.
+	Functia the_closest_point_on_map are cea mai mare complexitate din tot programul.
+	Pentru 1 frame va fi complexitate O(width * height * n) ca worst case, unde n este numarul de patratele care ne apartin. 
+
+Contributia:
+	De fiecare data cand am dezvoltat proiectul eram toti prezenti.
+	Toti am contribuit cu idei, si testari pe diferite harti si dimensiuni pentru a ne asigura ca ruleaza bine la modul general.
+	In afara intalnirilor Andrei a avut task-ul sa gaseasca solutii pt directia catre cel mai apropiat punct neutru fata de un punct de al nostru, Stefan a avut task-ul sa caute solutii pentru alegerea celui mai favorabil patratel(in functie de distanta, strength, productie) si Marin a avut task-ul de a gasi solutia pt a nu pierde mult strength in timp ce cucerim harta(patratele noastre mari sa se evite).Impreuna toti am cautat optimizari la solutiile gasite pt a reduce nr de frame-uri.
+
+/*----------------------------------------Etapa--4----------------------------------------*/
+	Botul a ramas la fel.
