@@ -1,0 +1,66 @@
+#!/bin/bash
+
+//Pe host
+
+A = 137
+B = 123
+C = 13
+D = 72
+E = 112
+F = 11
+G = 106
+H = 104
+I = 229
+J = 215
+K = 150
+
+"
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+auto eth0
+iface eth0 inet dhcp
+        up iptables-restore < /etc/iptables-rules
+
+auto veth-red
+iface veth-red inet static
+        address 172.18.\$A.1
+        netmask 255.255.255.0
+
+iface veth-red inet6 static
+        address 2001:67:\$D::1
+        netmask 64
+
+auto veth-green
+iface veth-green inet static
+        address 172.18.\$B.1
+        netmask 255.255.255.0
+iface veth-green inet6 static
+        address 2001:67:\$E::1
+        netmask 64
+
+auto veth-blue
+iface veth-blue inet static
+        address 172.18.\$C.1
+        netmask 255.255.255.0
+iface veth-blue inet6 static
+        address 2001:67:\$F::1
+        netmask 64" 2> /etc/network/interfaces
+
+"127.0.0.1       localhost
+127.0.1.1       host
+172.18.\$A.2    red
+172.18.\$B.2    green
+172.18.\$C.2     blue
+
+# The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters" 2> /etc/hosts
