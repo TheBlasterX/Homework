@@ -1,0 +1,64 @@
+//Jipa Alexandru-Stefan 331CB
+
+Scopul acestei teme este simularea jocului snake cu mai multi jucatori si
+paralelizarea acestuia pentru a demonstra scalabilitatea.
+Pentru a realiza solutia:
+	Mai intai parcurg matricea (harta) pentru a gasi toate cozile tuturor
+serpilor. Parcurg toata matricea si vad daca fiecare punct este coada sau nu.
+Ca sa vad daca este coada verific cati vecini (cu acceasi codificare(mai putin
+0)) are. Daca are 0 vecini atunci este sarpe de lungime 1.(deci capul este si
+coada). Daca are 1 vecin verific mai verific daca punctul obtinut este diferit
+fata de capatul sarpelui din care face parte(acest punct avand tot 1 vecin).
+Verific separat marginile hartii pentru ca trebuie sa dau vecinii (nord, sud,
+vest, est) separat(harta fiind circulara).
+	In functia run_simulation mai sunt 2 for-uri. Primul simuleaza rundele, al
+doilea simuleaza mutarea fiecarui sarpe. In cel de-al doilea for calculez noua
+coada pentru fiecare sarpe si apoi o sterg pe cea veche, dar o retin intr-un
+vector (vector ce retine ultima pozitie a cozii(inainte de mutare)). Apoi mut
+capul conform directiei cerute si pastrez intr-un vector noua pozitie a capului
+si actualizez in structura snakes noua pozitie a capului. In caz de detectie de
+coliziune pentru a salva matricea de dinaintea coliziunii apele o functie(last)
+in care:
+			refac coada ultimului sarpe mutat(cel care a cauzat coliziunea)
+			repozitionez capetele serpilor mutati in runda k + 1 facand
+		directia opusa a miscarii date din fisierul input
+			refac coada anterioara a celorlalti serpi mutati la pasul k + 1,
+		aici folosindu-ma de faptul ca in fisierle de testare publice ordinea
+		serpilor este crescatoare, pe pozitia i + 1 din vector aflandu-se
+		sarpele cu codificarea i.
+			sterg capetele noi ale serpilor mutati la pasul k + 1.
+
+	Am considerat ca nu este utila paralelizare for-ului de serpi (cel inclus)
+in for-ul cu runde, executia programului fiind incetinita datorita faptului ca
+thread-urile se creeza si distrug inauntrul for-ului cu runde, iar fisierul
+big_input nu este destul de mare pentru a face eficienta paralelizarea
+serpilor. Creand thread-uri in for-ul cu runde obtineam de la 5 thread-uri in
+sus timpi de executie mai mari decat executarea seriala a programului(cel cu
+8 thread-uri ajungand si la 3.5~3,6 sec (dar interiorul buclei for cu runde
+era diferita pentru a putea face posibila paralelizarea)).
+	In final am ales doar sa paralelizez niste for-uri, cum ar fi cele din
+functia de coliziune care pot reduce putin timpul de executie sau ca cele de la
+alocarea vectorilor creati la inceputul functiei run_simulation.
+	Pentru a testa programul cu numar diferit de thread-uri schimb valoarea
+variabilei NUM_THREADS (se regaseste in parallel_snake.c la inceputul functiei
+run_simulation). Modificam manual numarul de thread-uri deoarece comanda
+export OMP_NUM_THREADS=X (X nr de thread-uri) nu imi schimba variabila de mediu
+in masina mea virtuala (functia omp_get_num_threads() returnadu-mi 1 thread de
+fiecare data). Acum am lasat in program NUM_THREADS = omp_get_num_threads();
+pentru.
+	Si in plus (ca observatie) am presupus ca serpii vor fi dati ca in
+fisierele de input ca model, adica ma folosesc de faptul ca serpii au
+codificarea in ordine crescatoare incepand cu 1, pentru ca mi-a fost mai
+confortabil sa ii stochez in acest mod.
+
+
+Testare (pe masina mea virtuala(ubuntu 16.04) avand 4GB RAM si 8 cor-uri
+alocate(frecv max 3.6Ghz)) scalabilitate pe fisierul big_input (in medie):
+1 thread: 2.1 sec
+2 thread: 2.06 sec
+3 thread: 2.03 sec
+4 thread: 2.01 sec (uneori ajunge intre 1.90~1.95 sec)
+5 thread: 2.05 sec
+6 thread: 2.06 sec
+7 thread: 2.08 sec
+8 thread: 2.12 sec

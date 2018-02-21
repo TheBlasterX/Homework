@@ -1,0 +1,36 @@
+Jipa Alexandru-Stefan 331CB
+
+
+Au mers toate testele. Nu a fost nici o diferenta intre imaginele date pentru verificare si imaginele generate de program.
+	
+	Citesc din topologie
+		Citesc din imagini
+		Impart imaginea
+		Transmit un mesaj gol cu un tag care va spune ce filtru se aplica.
+		Transmit un mesaj cu numarul de linii si unul cu numarul de coloate 
+		Transmit numarul de linii la fiecare copil
+
+		Copilul va primi numarul de linii si va imparti si transmite mai departe sau va prelucra liniile daca este frunza
+		Dupa ce frunzele prelucreaza liniile, vor transmite la parinti.
+		Dupa ce ajunge toate liniile la root el va scrie imaginea
+	Se repeta pana cand nu mai sunt imagine.
+	Se transmite un mesaj cu tagul de terminare de la root la copii, copii root-ului vor transmite mai departe pana ajunge la frunze.
+		fiecare frunza va transmite numarul de linii prelucrate si rank lui la pariti. Parintii vor transmite mai departe la parintii lor pana ajunge la root.
+		Root-ul va scrie statisticele in fisier.
+		Dupa ce frunzele au transmis liniile prelucrate proces se va inchide.
+		Dupa ce root-ul va scrie fisierul de statistica program se termina.
+
+Fiecare nod cunoaste doar nodurile cu care este conectat direct si poate comunica doar cu acestea.
+
+Am folosit 6 tag-uri 
+TAG_START 			- transmite numarul de linii si numarul de coloane 
+SOBEL_TAG  			- tag care va spune ce filtru se aplica.
+MEAN_REMOVAL_TAG  	- tag care va spune ce filtru se aplica.
+TRANSMISSION_TAG 4  - transmite liniile
+END_TAG 5			- pentru statistica
+END_ROOT_TAG 6		- anunta ca procesul sa terminat 
+
+
+
+
+

@@ -1,0 +1,24 @@
+<project>
+    <target name="clean">
+        <delete file="MyDatabase.class"/>
+        <delete file="Database.class"/>
+        <delete file="Table.class"/>
+        <delete file="database.jar"/>
+        <delete file="Main.class"/>
+        <delete file="ConsistencyReaderThread.class"/>
+        <delete file="ConsistencyWriterThreads.class"/>
+        <delete file="ScalabilityTestThread.class"/>
+    </target>
+    <target name="compile">
+        <javac srcdir="${basedir}" destdir="${basedir}"/>
+    </target>
+
+    <target name="jar" depends="compile">
+        <jar destfile="database.jar" basedir="${basedir}">
+            <manifest>
+                <attribute name="Main-Class" value="Main"/>
+            </manifest>
+        </jar>
+
+    </target>
+</project>
